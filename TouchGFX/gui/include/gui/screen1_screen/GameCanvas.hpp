@@ -79,6 +79,12 @@ private:
         ITEM_WEAPON
     };
 
+    enum ScreenState {
+        STATE_START = 0,
+        STATE_PLAYING,
+        STATE_GAME_OVER
+    };
+
     struct Item {
         bool active;
         ItemType type;
@@ -125,6 +131,9 @@ private:
     int level;
     int levelTransitionTimer;
     int playerHitFlashTimer;
+    ScreenState screenState;
+    bool showLeaderboard;
+    int leaderboard[5];
 
     // Boss State Variables
     bool isBossFight;
@@ -147,12 +156,21 @@ private:
     void drawCircle(const touchgfx::Rect& invalidatedArea, int16_t cx, int16_t cy, int r, touchgfx::colortype col) const;
     void drawChar(const touchgfx::Rect& invalidatedArea, int16_t x, int16_t y, char c, touchgfx::colortype col) const;
     void drawString(const touchgfx::Rect& invalidatedArea, int16_t x, int16_t y, const char* str, touchgfx::colortype col) const;
+    void drawScaledChar(const touchgfx::Rect& invalidatedArea, int16_t x, int16_t y, char c, int scale, touchgfx::colortype col) const;
+    void drawScaledString(const touchgfx::Rect& invalidatedArea, int16_t x, int16_t y, const char* str, int scale, touchgfx::colortype col) const;
+    void drawOutlinedScaledString(const touchgfx::Rect& invalidatedArea, int16_t x, int16_t y, const char* str, int scale, touchgfx::colortype fill, touchgfx::colortype outline) const;
+    void fillRoundedRect(const touchgfx::Rect& invalidatedArea, int16_t x, int16_t y, int16_t w, int16_t h, int radius, touchgfx::colortype col) const;
+    void drawButton(const touchgfx::Rect& invalidatedArea, int16_t x, int16_t y, int16_t w, int16_t h, const char* label, bool selected) const;
+    void drawStartOverlay(const touchgfx::Rect& invalidatedArea) const;
+    void drawGameOverOverlay(const touchgfx::Rect& invalidatedArea) const;
     void drawStippleFlash(const touchgfx::Rect& invalidatedArea, int16_t x, int16_t y, uint16_t bitmapId, touchgfx::colortype col) const;
     void spawnBullet();
     void spawnEnemy();
     void spawnAsteroid();
     bool checkCollision(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
     void resetGame();
+    void endGame();
+    void recordLeaderboardScore();
 };
 
 #endif // GAMECANVAS_HPP
