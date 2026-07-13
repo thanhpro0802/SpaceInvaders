@@ -5,7 +5,7 @@
 #include <math.h>
 
 // Custom 5x7 Font Representation
-static const uint8_t font5x7[34][5] = {
+static const uint8_t font5x7[37][5] = {
     // 0
     {0x3E, 0x51, 0x49, 0x45, 0x3E},
     // 1
@@ -70,6 +70,12 @@ static const uint8_t font5x7[34][5] = {
     {0x3E, 0x41, 0x49, 0x49, 0x3A},
     // .
     {0x00, 0x60, 0x60, 0x00, 0x00},
+    // I
+    {0x00, 0x41, 0x7F, 0x41, 0x00},
+    // B
+    {0x7F, 0x49, 0x49, 0x49, 0x36},
+    // !
+    {0x00, 0x00, 0x5F, 0x00, 0x00},
     // space
     {0x00, 0x00, 0x00, 0x00, 0x00}
 };
@@ -99,7 +105,10 @@ static int getFontIndex(char c)
     if (c == 'A' || c == 'a') return 29;
     if (c == 'G' || c == 'g') return 30;
     if (c == '.') return 31;
-    return 32; // space
+    if (c == 'I' || c == 'i') return 32;
+    if (c == 'B' || c == 'b') return 33;
+    if (c == '!') return 34;
+    return 35; // space
 }
 
 GameCanvas::GameCanvas()
@@ -162,6 +171,15 @@ void GameCanvas::resetGame()
     flashScreenTimer = 0;
     level = 1;
     levelTransitionTimer = 0;
+    
+    isBossFight = false;
+    bossActive = false;
+    bossHp = 0;
+    bossMaxHp = 0;
+    bossHitFlashTimer = 0;
+    bossWidth = 48; // will be updated from bitmap once loaded
+    bossHeight = 48;
+    victoryTimer = 0;
 }
 
 touchgfx::Rect GameCanvas::getSolidRect() const
@@ -288,6 +306,75 @@ void GameCanvas::drawStippleFlash(const touchgfx::Rect& invalidatedArea, int16_t
     }
 }
 
+void GameCanvas::drawBoss(const touchgfx::Rect& invalidatedArea, int16_t x, int16_t y, bool isHitFlash) const
+{
+    touchgfx::Bitmap bmp(BITMAP_NAUTOLAN_SHIP_TORPEDO_SHIP_ID);
+    int16_t w = bmp.getWidth(); // 64
+    int16_t h = bmp.getHeight(); // 64
+    const uint32_t* data32 = (const uint32_t*)bmp.getData();
+    if (!data32) return;
+    
+    // Draw 2 glowing cyan/green engine exhausts at the top/rear of the Boss (flickering, aligned with 128x128 size)
+    {
+        int16_t exW = 8; // Làm cột lửa thon gọn hơn (rộng 8px)
+        int16_t exH = 18 + (gameTicks % 4) * 4; // Lập lòe độ dài
+        
+        touchgfx::colortype exCol1 = touchgfx::Color::getColorFromRGB(0, 255, 200);
+        touchgfx::colortype exCol2 = touchgfx::Color::getColorFromRGB(80, 240, 255);
+        touchgfx::colortype finalExCol = ((gameTicks / 2) % 2 == 0) ? exCol1 : exCol2;
+        
+        // Cột lửa động cơ trái (kéo xuống y + 56 cho sát cánh boss, dịch vào x + 24)
+        touchgfx::Rect leftEx(x + 24, y + 56 - exH, exW, exH);
+        touchgfx::Rect drawLeftEx = leftEx & invalidatedArea;
+        if (drawLeftEx.width > 0 && drawLeftEx.height > 0)
+        {
+            touchgfx::HAL::lcd().fillRect(drawLeftEx, finalExCol);
+        }
+        
+        // Cột lửa động cơ phải (kéo xuống y + 56 cho sát cánh boss, dịch vào x + 96 cho đối xứng hoàn hảo)
+        touchgfx::Rect rightEx(x + 96, y + 56 - exH, exW, exH);
+        touchgfx::Rect drawRightEx = rightEx & invalidatedArea;
+        if (drawRightEx.width > 0 && drawRightEx.height > 0)
+        {
+            touchgfx::HAL::lcd().fillRect(drawRightEx, finalExCol);
+        }
+    }
+    
+    // Vòng lặp quét từng pixel của ảnh gốc 64x64 để vẽ tỷ lệ 2x (128x128)
+    for (int16_t by = 0; by < h; by++)
+    {
+        for (int16_t bx = 0; bx < w; bx++)
+        {
+            uint32_t pixel = data32[(h - 1 - by) * w + bx]; // Đảo chiều dọc (Y-flip) để mũi tàu Boss hướng xuống dưới
+            uint8_t a = (pixel >> 24) & 0xFF;
+            if (a > 10)
+            {
+                touchgfx::colortype col;
+                if (isHitFlash)
+                {
+                    // Nhuộm đỏ 50%
+                    uint8_t r_orig = (pixel >> 16) & 0xFF;
+                    uint8_t g_orig = (pixel >> 8) & 0xFF;
+                    uint8_t b_orig = pixel & 0xFF;
+                    col = touchgfx::Color::getColorFromRGB((r_orig + 255) / 2, g_orig / 2, b_orig / 2);
+                }
+                else
+                {
+                    col = touchgfx::Color::getColorFromRGB((pixel >> 16) & 0xFF, (pixel >> 8) & 0xFF, pixel & 0xFF);
+                }
+                
+                // Vẽ tỷ lệ 2x2 cho mỗi pixel
+                touchgfx::Rect pixelBlock(x + bx * 2, y + by * 2, 2, 2);
+                touchgfx::Rect drawBlock = pixelBlock & invalidatedArea;
+                if (drawBlock.width > 0 && drawBlock.height > 0)
+                {
+                    touchgfx::HAL::lcd().fillRect(drawBlock, col, a);
+                }
+            }
+        }
+    }
+}
+
 void GameCanvas::draw(const touchgfx::Rect& invalidatedArea) const
 {
     // Determine which level assets to draw based on transition state
@@ -319,6 +406,22 @@ void GameCanvas::draw(const touchgfx::Rect& invalidatedArea) const
         dustBmpId = BITMAP_DUST_3_ID;
         starsBmpId = BITMAP_STARS_3_ID;
         planetsBmpId = BITMAP_PLANETS_3_ID;
+    }
+    else if (drawLevel == 4)
+    {
+        bgBmpId = BITMAP_BACKGROUND_4_ID;
+        nebulaBmpId = BITMAP_NEBULA_4_ID;
+        dustBmpId = BITMAP_DUST_4_ID;
+        starsBmpId = BITMAP_STARS_4_ID;
+        planetsBmpId = BITMAP_PLANETS_4_ID;
+    }
+    else if (drawLevel == 5)
+    {
+        bgBmpId = BITMAP_BACKGROUND_5_ID;
+        nebulaBmpId = BITMAP_NEBULA_5_ID;
+        dustBmpId = BITMAP_DUST_5_ID;
+        starsBmpId = BITMAP_STARS_5_ID;
+        planetsBmpId = BITMAP_PLANETS_5_ID;
     }
 
     // 1. Draw multi-layered scrolling background
@@ -531,6 +634,12 @@ void GameCanvas::draw(const touchgfx::Rect& invalidatedArea) const
         }
     }
 
+    // 7b. Draw Nautolan Torpedo Boss Ship
+    if (bossActive)
+    {
+        drawBoss(invalidatedArea, (int16_t)bossX, (int16_t)bossY, bossHitFlashTimer > 0);
+    }
+
     // 8. Draw asteroids
     for (int i = 0; i < MAX_ASTEROIDS; i++)
     {
@@ -570,6 +679,49 @@ void GameCanvas::draw(const touchgfx::Rect& invalidatedArea) const
                 int16_t ex = (int16_t)explosions[i].x - expBmp.getWidth() / 2;
                 int16_t ey = (int16_t)explosions[i].y - expBmp.getHeight() / 2;
                 drawBitmap(invalidatedArea, ex, ey, expBmpId);
+            }
+        }
+    }
+
+    // Draw Boss Health Bar at the bottom if Boss is Active
+    if (bossActive)
+    {
+        // Draw boss indicator text: "CHEFÃO" (using "CHEF AO" with custom tildes drawn on top)
+        drawString(invalidatedArea, 10, 305, "CHEF AO", touchgfx::Color::getColorFromRGB(255, 255, 255));
+        
+        // Draw tilde above A
+        touchgfx::Rect tildeA(35, 303, 3, 1);
+        touchgfx::Rect drawTildeA = tildeA & invalidatedArea;
+        if (drawTildeA.width > 0 && drawTildeA.height > 0)
+        {
+            touchgfx::HAL::lcd().fillRect(drawTildeA, touchgfx::Color::getColorFromRGB(255, 255, 255));
+        }
+
+        // Draw tilde above O
+        touchgfx::Rect tildeO(41, 303, 3, 1);
+        touchgfx::Rect drawTildeO = tildeO & invalidatedArea;
+        if (drawTildeO.width > 0 && drawTildeO.height > 0)
+        {
+            touchgfx::HAL::lcd().fillRect(drawTildeO, touchgfx::Color::getColorFromRGB(255, 255, 255));
+        }
+
+        // Dark red background bar on the right
+        touchgfx::Rect bossHpBg(75, 305, 155, 8);
+        touchgfx::Rect drawBossHpBg = bossHpBg & invalidatedArea;
+        if (drawBossHpBg.width > 0 && drawBossHpBg.height > 0)
+        {
+            touchgfx::HAL::lcd().fillRect(drawBossHpBg, touchgfx::Color::getColorFromRGB(60, 10, 10));
+        }
+        
+        // Bright red foreground bar scaling with bossHp / bossMaxHp
+        int bossHpW = (bossHp * 155) / bossMaxHp;
+        if (bossHpW > 0)
+        {
+            touchgfx::Rect bossHpFg(75, 305, bossHpW, 8);
+            touchgfx::Rect drawBossHpFg = bossHpFg & invalidatedArea;
+            if (drawBossHpFg.width > 0 && drawBossHpFg.height > 0)
+            {
+                touchgfx::HAL::lcd().fillRect(drawBossHpFg, touchgfx::Color::getColorFromRGB(255, 10, 10));
             }
         }
     }
@@ -729,9 +881,44 @@ void GameCanvas::update()
         level = 3;
         levelTransitionTimer = 120;
     }
+    else if (backgroundY >= 3600 && level == 3 && levelTransitionTimer == 0)
+    {
+        level = 4;
+        levelTransitionTimer = 120;
+    }
+    else if (backgroundY >= 4800 && level == 4 && levelTransitionTimer == 0)
+    {
+        level = 5;
+        levelTransitionTimer = 120;
+    }
+    else if (backgroundY >= 6000 && !isBossFight && level == 5 && levelTransitionTimer == 0)
+    {
+        isBossFight = true;
+        bossActive = true;
+        bossHp = 200; // Tăng máu Boss để phù hợp với đạn cấp độ 3 và kích thước lớn
+        bossMaxHp = 200;
+        // Boss được vẽ phóng to gấp đôi (64x64 gốc x2), nên kích thước biên là 128x128
+        bossWidth = 128;
+        bossHeight = 128;
+        bossX = 120 - bossWidth / 2; // = 56
+        bossY = -bossHeight;
+        bossVx = 1.5f;
+        bossShootTimer = 0;
+        bossHitFlashTimer = 0;
+        flashScreenTimer = 15; // flash screen green/red
+        victoryTimer = 0;
+        
+        bossTargetPoint = 0;
+        bossPauseTimer = 0;
+        bossIsPaused = false;
+    }
 
     int scrollSpeed = 1;
-    if (levelTransitionTimer > 0)
+    if (isBossFight)
+    {
+        scrollSpeed = 0; // Freeze background scrolling during boss battle!
+    }
+    else if (levelTransitionTimer > 0)
     {
         levelTransitionTimer--;
         if (levelTransitionTimer > 60)
@@ -826,10 +1013,10 @@ void GameCanvas::update()
         }
     }
 
-    // Spawn enemies (suppressed during hyperjump)
-    if (levelTransitionTimer > 60)
+    // Spawn enemies (suppressed during hyperjump and boss fight)
+    if (levelTransitionTimer > 60 || isBossFight)
     {
-        // Don't spawn new enemies during warp!
+        // Don't spawn new enemies during warp or boss fight!
     }
     else
     {
@@ -977,10 +1164,10 @@ void GameCanvas::update()
         }
     }
 
-    // Spawn asteroids (suppressed during hyperjump)
-    if (levelTransitionTimer > 60)
+    // Spawn asteroids (suppressed during hyperjump and boss fight)
+    if (levelTransitionTimer > 60 || isBossFight)
     {
-        // Don't spawn new asteroids during warp!
+        // Don't spawn new asteroids during warp or boss fight!
     }
     else
     {
@@ -1040,7 +1227,8 @@ void GameCanvas::update()
                 else
                 {
                     playerHitFlashTimer = 15; // Nhấp nháy xanh lá trong 15 khung hình
-                    health -= 25; // Lose 25 HP
+                    int dmg = isBossFight ? 10 : 20;
+                    health -= dmg; // Giảm sát thương của đạn khi đấu Boss
                     if (health <= 0)
                     {
                         lives--;
@@ -1186,6 +1374,181 @@ void GameCanvas::update()
                     }
                 }
             }
+        }
+    }
+    // --- Boss Fight update loop ---
+    if (bossActive)
+    {
+        if (bossHitFlashTimer > 0)
+        {
+            bossHitFlashTimer--;
+        }
+
+        // 1. Move boss down to start position ty[0] (32) first
+        if (bossY < 32.0f && !bossIsPaused && bossTargetPoint == 0)
+        {
+            bossY += 1.0f;
+        }
+        else
+        {
+            // Triangle movement points
+            // Triangle movement points (Căn lại cho Boss 128x128 trên màn hình 240x320)
+            float tx[3] = {10.0f, 102.0f, 56.0f};
+            float ty[3] = {32.0f, 32.0f, 140.0f};
+            
+            if (bossIsPaused)
+            {
+                bossPauseTimer--;
+                
+                // 2. Boss Weapon: Shoot 2 vertical streams of yellow ball bullets
+                bossShootTimer++;
+                if (bossShootTimer >= 12) // Rapid fire during pause!
+                {
+                    bossShootTimer = 0;
+                    
+                    // Left launcher stream (Cánh trái boss 128x128)
+                    for (int b = 0; b < MAX_BULLETS; b++)
+                    {
+                        if (!bullets[b].active)
+                        {
+                            bullets[b].active = true;
+                            bullets[b].isEnemyBullet = true;
+                            bullets[b].isBallBullet = true;
+                            bullets[b].width = 16;
+                            bullets[b].height = 16;
+                            bullets[b].x = bossX + 20 - 8;
+                            bullets[b].y = bossY + 96;
+                            bullets[b].vx = 0.0f;
+                            bullets[b].vy = 3.5f;
+                            bullets[b].animFrame = 0;
+                            break;
+                        }
+                    }
+                    
+                    // Right launcher stream (Cánh phải boss 128x128 - Cách xa 80 pixel)
+                    for (int b = 0; b < MAX_BULLETS; b++)
+                    {
+                        if (!bullets[b].active)
+                        {
+                            bullets[b].active = true;
+                            bullets[b].isEnemyBullet = true;
+                            bullets[b].isBallBullet = true;
+                            bullets[b].width = 16;
+                            bullets[b].height = 16;
+                            bullets[b].x = bossX + 100 - 8;
+                            bullets[b].y = bossY + 96;
+                            bullets[b].vx = 0.0f;
+                            bullets[b].vy = 3.5f;
+                            bullets[b].animFrame = 0;
+                            break;
+                        }
+                    }
+                }
+                
+                if (bossPauseTimer <= 0)
+                {
+                    bossIsPaused = false;
+                    bossTargetPoint = (bossTargetPoint + 1) % 3;
+                }
+            }
+            else
+            {
+                // Move towards current target point
+                float dx = tx[bossTargetPoint] - bossX;
+                float dy = ty[bossTargetPoint] - bossY;
+                float dist = sqrtf(dx * dx + dy * dy);
+                
+                if (dist < 4.0f)
+                {
+                    bossIsPaused = true;
+                    bossPauseTimer = 180; // 3 seconds pause
+                    bossShootTimer = 0;
+                }
+                else
+                {
+                    // Move speed = 1.4 pixels per frame
+                    bossX += (dx / dist) * 1.4f;
+                    bossY += (dy / dist) * 1.4f;
+                }
+            }
+        }
+
+        // 3. Collision: Player Bullets hitting Boss
+        for (int b = 0; b < MAX_BULLETS; b++)
+        {
+            if (bullets[b].active && !bullets[b].isEnemyBullet)
+            {
+                if (checkCollision((int)bullets[b].x, (int)bullets[b].y, bullets[b].width, bullets[b].height,
+                                   (int)bossX + 4, (int)bossY + 4, bossWidth - 8, bossHeight - 8))
+                {
+                    bullets[b].active = false;
+                    bossHp -= 8; // Buff damage cho người chơi để kết liễu nhanh hơn
+                    bossHitFlashTimer = 5; // nháy đỏ
+
+                    if (bossHp <= 0)
+                    {
+                        bossActive = false;
+                        
+                        // Spawn massive chain of explosions
+                        for (int k = 0; k < 6; k++)
+                        {
+                            for (int ex = 0; ex < MAX_EXPLOSIONS; ex++)
+                            {
+                                if (!explosions[ex].active)
+                                {
+                                    explosions[ex].active = true;
+                                    explosions[ex].x = bossX + (rand() % bossWidth);
+                                    explosions[ex].y = bossY + (rand() % bossHeight);
+                                    explosions[ex].frame = -k * 3; // staggered delay explosion!
+                                    break;
+                                }
+                            }
+                        }
+
+                        score += 10000; // 10k points for boss!
+                        if (score > highScore) highScore = score;
+
+                        victoryTimer = 240; // 4 seconds victory screen
+                    }
+                }
+            }
+        }
+
+        // 4. Collision: Player Ship colliding with Boss
+        if (checkCollision(playerX + 6, playerY + 6, playerWidth - 12, playerHeight - 12,
+                           (int)bossX + 4, (int)bossY + 4, bossWidth - 8, bossHeight - 8))
+        {
+            if (hasShield)
+            {
+                hasShield = false;
+            }
+            else
+            {
+                playerHitFlashTimer = 15;
+                health -= 50; // Heavy collision damage
+                if (health <= 0)
+                {
+                    lives--;
+                    health = 100;
+                    weaponLevel = 1;
+                    if (lives < 0)
+                    {
+                        resetGame();
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    // Victory screen countdown timer
+    if (victoryTimer > 0)
+    {
+        victoryTimer--;
+        if (victoryTimer == 1)
+        {
+            resetGame();
+            return;
         }
     }
 
