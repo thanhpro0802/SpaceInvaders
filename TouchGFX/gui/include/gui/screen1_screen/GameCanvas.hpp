@@ -135,7 +135,23 @@ private:
     bool showLeaderboard;
     int leaderboard[5];
 
+    // Boss State Variables
+    bool isBossFight;
+    bool bossActive;
+    float bossX, bossY;
+    int bossHp;
+    int bossMaxHp;
+    float bossVx;
+    int bossShootTimer;
+    int bossHitFlashTimer;
+    int bossWidth, bossHeight;
+    int victoryTimer;
+    int bossTargetPoint;
+    int bossPauseTimer;
+    bool bossIsPaused;
+
     // Helper functions
+    void drawBoss(const touchgfx::Rect& invalidatedArea, int16_t x, int16_t y, bool isHitFlash) const;
     void drawBitmap(const touchgfx::Rect& invalidatedArea, int16_t x, int16_t y, uint16_t bitmapId) const;
     void drawCircle(const touchgfx::Rect& invalidatedArea, int16_t cx, int16_t cy, int r, touchgfx::colortype col) const;
     void drawChar(const touchgfx::Rect& invalidatedArea, int16_t x, int16_t y, char c, touchgfx::colortype col) const;
