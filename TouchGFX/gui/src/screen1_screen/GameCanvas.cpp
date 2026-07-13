@@ -3,45 +3,81 @@
 #include <touchgfx/lcd/LCD.hpp>
 #include <stdlib.h>
 #include <math.h>
-#include <string.h>
 
-// Retro Gaming style 7x7 bitmap font. Each row uses bits 6..0 from left to right.
-static const uint8_t retroFont7x7[36][7] = {
-    {0x3E, 0x63, 0x67, 0x6B, 0x73, 0x63, 0x3E}, // 0
-    {0x18, 0x38, 0x18, 0x18, 0x18, 0x18, 0x7E}, // 1
-    {0x3E, 0x63, 0x03, 0x0E, 0x38, 0x60, 0x7F}, // 2
-    {0x3E, 0x63, 0x03, 0x1E, 0x03, 0x63, 0x3E}, // 3
-    {0x0E, 0x1E, 0x36, 0x66, 0x7F, 0x06, 0x06}, // 4
-    {0x7F, 0x60, 0x7E, 0x03, 0x03, 0x63, 0x3E}, // 5
-    {0x1E, 0x30, 0x60, 0x7E, 0x63, 0x63, 0x3E}, // 6
-    {0x7F, 0x63, 0x06, 0x0C, 0x18, 0x18, 0x18}, // 7
-    {0x3E, 0x63, 0x63, 0x3E, 0x63, 0x63, 0x3E}, // 8
-    {0x3E, 0x63, 0x63, 0x3F, 0x03, 0x06, 0x3C}, // 9
-    {0x00, 0x18, 0x18, 0x00, 0x18, 0x18, 0x00}, // :
-    {0x7E, 0x63, 0x63, 0x7E, 0x60, 0x60, 0x60}, // P
-    {0x3E, 0x63, 0x63, 0x63, 0x63, 0x63, 0x3E}, // O
-    {0x63, 0x73, 0x7B, 0x6F, 0x67, 0x63, 0x63}, // N
-    {0x7F, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18}, // T
-    {0x3F, 0x60, 0x60, 0x3E, 0x03, 0x03, 0x7E}, // S
-    {0x7E, 0x63, 0x63, 0x7E, 0x6C, 0x66, 0x63}, // R
-    {0x7F, 0x60, 0x60, 0x7E, 0x60, 0x60, 0x7F}, // E
-    {0x3E, 0x63, 0x60, 0x60, 0x60, 0x63, 0x3E}, // C
-    {0x7C, 0x66, 0x63, 0x63, 0x63, 0x66, 0x7C}, // D
-    {0x63, 0x63, 0x63, 0x36, 0x36, 0x1C, 0x08}, // V
-    {0x60, 0x60, 0x60, 0x60, 0x60, 0x60, 0x7F}, // L
-    {0x63, 0x36, 0x1C, 0x08, 0x1C, 0x36, 0x63}, // X
-    {0x00, 0x00, 0x00, 0x7E, 0x00, 0x00, 0x00}, // -
-    {0x63, 0x63, 0x63, 0x7F, 0x63, 0x63, 0x63}, // H
-    {0x63, 0x63, 0x36, 0x1C, 0x18, 0x18, 0x18}, // Y
-    {0x1F, 0x06, 0x06, 0x06, 0x66, 0x66, 0x3C}, // J
-    {0x63, 0x63, 0x63, 0x63, 0x63, 0x63, 0x3E}, // U
-    {0x63, 0x77, 0x7F, 0x6B, 0x63, 0x63, 0x63}, // M
-    {0x1C, 0x36, 0x63, 0x63, 0x7F, 0x63, 0x63}, // A
-    {0x3E, 0x63, 0x60, 0x6F, 0x63, 0x63, 0x3E}, // G
-    {0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x18}, // .
-    {0x7E, 0x18, 0x18, 0x18, 0x18, 0x18, 0x7E}, // I
-    {0x7E, 0x63, 0x63, 0x7E, 0x63, 0x63, 0x7E}, // B
-    {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}  // space
+// Custom 5x7 Font Representation
+static const uint8_t font5x7[37][5] = {
+    // 0
+    {0x3E, 0x51, 0x49, 0x45, 0x3E},
+    // 1
+    {0x00, 0x42, 0x7F, 0x40, 0x00},
+    // 2
+    {0x42, 0x61, 0x51, 0x49, 0x46},
+    // 3
+    {0x21, 0x41, 0x45, 0x4B, 0x31},
+    // 4
+    {0x18, 0x14, 0x12, 0x7F, 0x10},
+    // 5
+    {0x27, 0x45, 0x45, 0x45, 0x39},
+    // 6
+    {0x3C, 0x4A, 0x49, 0x49, 0x30},
+    // 7
+    {0x01, 0x71, 0x09, 0x05, 0x03},
+    // 8
+    {0x36, 0x49, 0x49, 0x49, 0x36},
+    // 9
+    {0x06, 0x49, 0x49, 0x29, 0x1E},
+    // :
+    {0x00, 0x36, 0x36, 0x00, 0x00},
+    // P
+    {0x7F, 0x09, 0x09, 0x09, 0x06},
+    // O
+    {0x3E, 0x41, 0x41, 0x41, 0x3E},
+    // N
+    {0x7F, 0x04, 0x08, 0x10, 0x7F},
+    // T
+    {0x01, 0x01, 0x7F, 0x01, 0x01},
+    // S
+    {0x26, 0x49, 0x49, 0x49, 0x32},
+    // R
+    {0x7F, 0x09, 0x19, 0x29, 0x46},
+    // E
+    {0x7F, 0x49, 0x49, 0x49, 0x41},
+    // C
+    {0x3E, 0x41, 0x41, 0x41, 0x22},
+    // D
+    {0x7F, 0x41, 0x41, 0x22, 0x1C},
+    // V
+    {0x1F, 0x20, 0x40, 0x20, 0x1F},
+    // L
+    {0x7F, 0x40, 0x40, 0x40, 0x40},
+    // X
+    {0x63, 0x14, 0x08, 0x14, 0x63},
+    // -
+    {0x08, 0x08, 0x08, 0x08, 0x08},
+    // H
+    {0x7F, 0x08, 0x08, 0x08, 0x7F},
+    // Y
+    {0x07, 0x08, 0x70, 0x08, 0x07},
+    // J
+    {0x20, 0x40, 0x41, 0x3F, 0x01},
+    // U
+    {0x3F, 0x40, 0x40, 0x40, 0x3F},
+    // M
+    {0x7F, 0x02, 0x0C, 0x02, 0x7F},
+    // A
+    {0x7E, 0x11, 0x11, 0x11, 0x7E},
+    // G
+    {0x3E, 0x41, 0x49, 0x49, 0x3A},
+    // .
+    {0x00, 0x60, 0x60, 0x00, 0x00},
+    // I
+    {0x00, 0x41, 0x7F, 0x41, 0x00},
+    // B
+    {0x7F, 0x49, 0x49, 0x49, 0x36},
+    // !
+    {0x00, 0x00, 0x5F, 0x00, 0x00},
+    // space
+    {0x00, 0x00, 0x00, 0x00, 0x00}
 };
 
 static int getFontIndex(char c)
@@ -71,7 +107,8 @@ static int getFontIndex(char c)
     if (c == '.') return 31;
     if (c == 'I' || c == 'i') return 32;
     if (c == 'B' || c == 'b') return 33;
-    return 34; // space
+    if (c == '!') return 34;
+    return 35; // space
 }
 
 GameCanvas::GameCanvas()
@@ -84,16 +121,8 @@ GameCanvas::GameCanvas()
     playerSpeed = 5;
 
     highScore = 18000; // default initial high score
-    for (int i = 0; i < 5; i++)
-    {
-        leaderboard[i] = 0;
-    }
-    leaderboard[0] = highScore;
-    screenState = STATE_PLAYING;
-    showLeaderboard = false;
 
     resetGame();
-    screenState = STATE_START;
 }
 
 void GameCanvas::resetGame()
@@ -142,9 +171,6 @@ void GameCanvas::resetGame()
     flashScreenTimer = 0;
     level = 1;
     levelTransitionTimer = 0;
-    playerHitFlashTimer = 0;
-    screenState = STATE_PLAYING;
-    showLeaderboard = false;
     
     isBossFight = false;
     bossActive = false;
@@ -199,12 +225,12 @@ void GameCanvas::drawCircle(const touchgfx::Rect& invalidatedArea, int16_t cx, i
 void GameCanvas::drawChar(const touchgfx::Rect& invalidatedArea, int16_t x, int16_t y, char c, touchgfx::colortype col) const
 {
     int idx = getFontIndex(c);
-    for (int rowIdx = 0; rowIdx < 7; rowIdx++)
+    for (int colIdx = 0; colIdx < 5; colIdx++)
     {
-        uint8_t row = retroFont7x7[idx][rowIdx];
-        for (int colIdx = 0; colIdx < 7; colIdx++)
+        uint8_t line = font5x7[idx][colIdx];
+        for (int rowIdx = 0; rowIdx < 7; rowIdx++)
         {
-            if (row & (1 << (6 - colIdx)))
+            if (line & (1 << rowIdx))
             {
                 touchgfx::Rect pixelRect(x + colIdx, y + rowIdx, 1, 1);
                 touchgfx::Rect drawRect = pixelRect & invalidatedArea;
@@ -223,196 +249,9 @@ void GameCanvas::drawString(const touchgfx::Rect& invalidatedArea, int16_t x, in
     while (*str)
     {
         drawChar(invalidatedArea, cx, y, *str, col);
-        cx += 8; // 7 pixels width + 1 pixel spacing
+        cx += 6; // 5 pixels width + 1 pixel spacing
         str++;
     }
-}
-
-void GameCanvas::drawScaledChar(const touchgfx::Rect& invalidatedArea, int16_t x, int16_t y, char c, int scale, touchgfx::colortype col) const
-{
-    int idx = getFontIndex(c);
-    for (int rowIdx = 0; rowIdx < 7; rowIdx++)
-    {
-        uint8_t row = retroFont7x7[idx][rowIdx];
-        for (int colIdx = 0; colIdx < 7; colIdx++)
-        {
-            if (row & (1 << (6 - colIdx)))
-            {
-                touchgfx::Rect pixelRect(x + colIdx * scale, y + rowIdx * scale, scale, scale);
-                touchgfx::Rect drawRect = pixelRect & invalidatedArea;
-                if (drawRect.width > 0 && drawRect.height > 0)
-                {
-                    touchgfx::HAL::lcd().fillRect(drawRect, col);
-                }
-            }
-        }
-    }
-}
-
-void GameCanvas::drawScaledString(const touchgfx::Rect& invalidatedArea, int16_t x, int16_t y, const char* str, int scale, touchgfx::colortype col) const
-{
-    int16_t cx = x;
-    while (*str)
-    {
-        drawScaledChar(invalidatedArea, cx, y, *str, scale, col);
-        cx += 8 * scale;
-        str++;
-    }
-}
-
-void GameCanvas::drawOutlinedScaledString(const touchgfx::Rect& invalidatedArea, int16_t x, int16_t y, const char* str, int scale, touchgfx::colortype fill, touchgfx::colortype outline) const
-{
-    drawScaledString(invalidatedArea, x - scale, y, str, scale, outline);
-    drawScaledString(invalidatedArea, x + scale, y, str, scale, outline);
-    drawScaledString(invalidatedArea, x, y - scale, str, scale, outline);
-    drawScaledString(invalidatedArea, x, y + scale, str, scale, outline);
-    drawScaledString(invalidatedArea, x - scale, y - scale, str, scale, outline);
-    drawScaledString(invalidatedArea, x + scale, y - scale, str, scale, outline);
-    drawScaledString(invalidatedArea, x - scale, y + scale, str, scale, outline);
-    drawScaledString(invalidatedArea, x + scale, y + scale, str, scale, outline);
-    drawScaledString(invalidatedArea, x, y, str, scale, fill);
-}
-
-void GameCanvas::fillRoundedRect(const touchgfx::Rect& invalidatedArea, int16_t x, int16_t y, int16_t w, int16_t h, int radius, touchgfx::colortype col) const
-{
-    if (radius < 1)
-    {
-        touchgfx::Rect rect(x, y, w, h);
-        touchgfx::Rect drawRect = rect & invalidatedArea;
-        if (drawRect.width > 0 && drawRect.height > 0)
-        {
-            touchgfx::HAL::lcd().fillRect(drawRect, col);
-        }
-        return;
-    }
-
-    if (radius * 2 > w) radius = w / 2;
-    if (radius * 2 > h) radius = h / 2;
-
-    for (int row = 0; row < h; row++)
-    {
-        int inset = 0;
-        if (row < radius)
-        {
-            int dy = radius - row - 1;
-            inset = radius - (int)sqrtf((float)(radius * radius - dy * dy));
-        }
-        else if (row >= h - radius)
-        {
-            int dy = row - (h - radius);
-            inset = radius - (int)sqrtf((float)(radius * radius - dy * dy));
-        }
-
-        touchgfx::Rect rowRect(x + inset, y + row, w - inset * 2, 1);
-        touchgfx::Rect drawRect = rowRect & invalidatedArea;
-        if (drawRect.width > 0 && drawRect.height > 0)
-        {
-            touchgfx::HAL::lcd().fillRect(drawRect, col);
-        }
-    }
-}
-
-void GameCanvas::drawButton(const touchgfx::Rect& invalidatedArea, int16_t x, int16_t y, int16_t w, int16_t h, const char* label, bool selected) const
-{
-    touchgfx::colortype fill = selected ? touchgfx::Color::getColorFromRGB(126, 0, 138) : touchgfx::Color::getColorFromRGB(190, 0, 190);
-    touchgfx::colortype border = selected ? touchgfx::Color::getColorFromRGB(255, 245, 255) : touchgfx::Color::getColorFromRGB(80, 80, 90);
-
-    fillRoundedRect(invalidatedArea, x + 4, y + 4, w, h, 8, touchgfx::Color::getColorFromRGB(35, 35, 45));
-    fillRoundedRect(invalidatedArea, x, y, w, h, 8, border);
-    fillRoundedRect(invalidatedArea, x + 3, y + 3, w - 6, h - 6, 6, fill);
-
-    int textLen = (int)strlen(label);
-    int textW = textLen * 16;
-    drawScaledString(invalidatedArea, x + (w - textW) / 2, y + (h - 14) / 2, label, 2, touchgfx::Color::getColorFromRGB(255, 255, 255));
-}
-
-void GameCanvas::drawStartOverlay(const touchgfx::Rect& invalidatedArea) const
-{
-    touchgfx::Bitmap startPlanets(BITMAP_PLANETS_3_ID);
-    int startPlanetH = startPlanets.getHeight();
-    int startPlanetScrollY = (backgroundY / 3) % startPlanetH;
-    for (int y = -startPlanetH; y < 320; y += startPlanetH)
-    {
-        drawBitmap(invalidatedArea, -40, y + startPlanetScrollY, BITMAP_PLANETS_3_ID);
-    }
-
-    touchgfx::Rect shade(0, 0, 240, 320);
-    touchgfx::Rect drawShade = shade & invalidatedArea;
-    if (drawShade.width > 0 && drawShade.height > 0)
-    {
-        touchgfx::HAL::lcd().fillRect(drawShade, touchgfx::Color::getColorFromRGB(0, 0, 0), 60);
-    }
-
-    touchgfx::colortype white = touchgfx::Color::getColorFromRGB(255, 255, 255);
-    touchgfx::colortype black = touchgfx::Color::getColorFromRGB(0, 0, 0);
-    drawOutlinedScaledString(invalidatedArea, 8, 58, "SPACE INVADERS", 2, white, black);
-
-    float shipWave = sinf((float)backgroundY * 0.035f);
-    int shipX = (240 - playerWidth) / 2 + (int)(shipWave * 42.0f);
-    int shipY = 150 + (int)(sinf((float)backgroundY * 0.022f) * 8.0f);
-    int pFlameH = 10 + (rand() % 8);
-    touchgfx::colortype flameCol = touchgfx::Color::getColorFromRGB(255, 100 + (rand() % 80), 0);
-    for (int row = 0; row < pFlameH; row++)
-    {
-        int w = (pFlameH - row) * 8 / pFlameH;
-        if (w > 0)
-        {
-            touchgfx::Rect rowRect(shipX + playerWidth / 2 - w / 2, shipY + playerHeight - 3 + row, w, 1);
-            touchgfx::Rect drawRect = rowRect & invalidatedArea;
-            if (drawRect.width > 0 && drawRect.height > 0)
-            {
-                touchgfx::HAL::lcd().fillRect(drawRect, flameCol);
-            }
-        }
-    }
-    drawBitmap(invalidatedArea, shipX, shipY, BITMAP_PLAYER_SHIP_1_ID);
-
-    drawButton(invalidatedArea, 54, 246, 132, 38, "PLAY", true);
-}
-
-void GameCanvas::drawGameOverOverlay(const touchgfx::Rect& invalidatedArea) const
-{
-    touchgfx::Rect shade(0, 0, 240, 320);
-    touchgfx::Rect drawShade = shade & invalidatedArea;
-    if (drawShade.width > 0 && drawShade.height > 0)
-    {
-        touchgfx::HAL::lcd().fillRect(drawShade, touchgfx::Color::getColorFromRGB(0, 0, 0), 160);
-    }
-
-    drawScaledString(invalidatedArea, 12, 80, "GAME OVER", 3, touchgfx::Color::getColorFromRGB(255, 255, 255));
-
-    char scoreBuf[24] = "SCORE:";
-    char scoreVal[12];
-    itoa(score, scoreVal, 10);
-    strcat(scoreBuf, scoreVal);
-    drawScaledString(invalidatedArea, 36, 112, scoreBuf, 2, touchgfx::Color::getColorFromRGB(255, 255, 255));
-
-    if (showLeaderboard)
-    {
-        drawScaledString(invalidatedArea, 80, 134, "TOP 5", 2, touchgfx::Color::getColorFromRGB(255, 255, 100));
-        for (int i = 0; i < 5; i++)
-        {
-            char row[24];
-            char rank[4];
-            char value[12];
-            itoa(i + 1, rank, 10);
-            itoa(leaderboard[i], value, 10);
-            strcpy(row, rank);
-            strcat(row, ":");
-            strcat(row, value);
-            drawScaledString(invalidatedArea, 72, 156 + i * 18, row, 2, touchgfx::Color::getColorFromRGB(220, 220, 220));
-        }
-    }
-    else
-    {
-        drawScaledString(invalidatedArea, 52, 152, "BEST", 2, touchgfx::Color::getColorFromRGB(255, 255, 100));
-        char bestVal[12];
-        itoa(highScore, bestVal, 10);
-        drawScaledString(invalidatedArea, 126, 152, bestVal, 2, touchgfx::Color::getColorFromRGB(255, 255, 100));
-    }
-
-    drawButton(invalidatedArea, 34, 248, 172, 32, "RESTART", true);
-    drawButton(invalidatedArea, 34, 288, 172, 26, showLeaderboard ? "EXIT" : "TOP 5", false);
 }
 
 void GameCanvas::drawStippleFlash(const touchgfx::Rect& invalidatedArea, int16_t x, int16_t y, uint16_t bitmapId, touchgfx::colortype col) const
@@ -639,12 +478,6 @@ void GameCanvas::draw(const touchgfx::Rect& invalidatedArea) const
     int bgPH = bgPlanets.getHeight();
     int scrollPlanetsY = (backgroundY / 6) % (320 + bgPH);
     drawBitmap(invalidatedArea, 10, -bgPH + scrollPlanetsY, planetsBmpId);
-
-    if (screenState == STATE_START)
-    {
-        drawStartOverlay(invalidatedArea);
-        return;
-    }
 
     // Full-screen flash effect for Ultimate Bomb (drawn behind sprites)
     if (flashScreenTimer > 0)
@@ -1006,45 +839,12 @@ void GameCanvas::draw(const touchgfx::Rect& invalidatedArea) const
             drawString(invalidatedArea, 68, 146, stageText, touchgfx::Color::getColorFromRGB(100, 255, 100));
         }
     }
-
-    if (screenState == STATE_GAME_OVER)
-    {
-        drawGameOverOverlay(invalidatedArea);
-    }
 }
 
 void GameCanvas::handleClickEvent(const touchgfx::ClickEvent& event)
 {
     if (event.getType() == touchgfx::ClickEvent::PRESSED)
     {
-        if (screenState == STATE_START)
-        {
-            int x = event.getX();
-            int y = event.getY();
-            if (x >= 54 && x <= 186 && y >= 246 && y <= 284)
-            {
-                resetGame();
-            }
-            invalidate();
-            return;
-        }
-
-        if (screenState == STATE_GAME_OVER)
-        {
-            int x = event.getX();
-            int y = event.getY();
-            if (x >= 34 && x <= 206 && y >= 248 && y <= 280)
-            {
-                resetGame();
-            }
-            else if (x >= 34 && x <= 206 && y >= 288 && y <= 314)
-            {
-                showLeaderboard = !showLeaderboard;
-            }
-            invalidate();
-            return;
-        }
-
         playerX = event.getX() - playerWidth / 2;
         playerY = event.getY() - playerHeight / 2;
         invalidate();
@@ -1053,16 +853,6 @@ void GameCanvas::handleClickEvent(const touchgfx::ClickEvent& event)
 
 void GameCanvas::handleDragEvent(const touchgfx::DragEvent& event)
 {
-    if (screenState == STATE_START)
-    {
-        return;
-    }
-
-    if (screenState == STATE_GAME_OVER)
-    {
-        return;
-    }
-
     playerX = event.getNewX() - playerWidth / 2;
     playerY = event.getNewY() - playerHeight / 2;
 
@@ -1077,20 +867,6 @@ void GameCanvas::handleDragEvent(const touchgfx::DragEvent& event)
 
 void GameCanvas::update()
 {
-    if (screenState == STATE_START)
-    {
-        backgroundY += 2;
-        invalidate();
-        return;
-    }
-
-    if (screenState == STATE_GAME_OVER)
-    {
-        backgroundY += 1;
-        invalidate();
-        return;
-    }
-
     // Tick game time
     gameTicks++;
 
@@ -1460,7 +1236,7 @@ void GameCanvas::update()
                         weaponLevel = 1; // reset weapon level on death
                         if (lives < 0)
                         {
-                            endGame();
+                            resetGame();
                             return;
                         }
                     }
@@ -1564,7 +1340,7 @@ void GameCanvas::update()
                     weaponLevel = 1; // reset weapon level
                     if (lives < 0)
                     {
-                        endGame();
+                        resetGame();
                         return;
                     }
                 }
@@ -1593,7 +1369,7 @@ void GameCanvas::update()
                     weaponLevel = 1; // reset weapon level
                     if (lives < 0)
                     {
-                        endGame();
+                        resetGame();
                         return;
                     }
                 }
@@ -2020,59 +1796,8 @@ bool GameCanvas::checkCollision(int x1, int y1, int w1, int h1, int x2, int y2, 
             y1 + h1 > y2);
 }
 
-void GameCanvas::recordLeaderboardScore()
-{
-    for (int i = 0; i < 5; i++)
-    {
-        if (score > leaderboard[i])
-        {
-            for (int j = 4; j > i; j--)
-            {
-                leaderboard[j] = leaderboard[j - 1];
-            }
-            leaderboard[i] = score;
-            break;
-        }
-    }
-}
-
-void GameCanvas::endGame()
-{
-    if (score > highScore)
-    {
-        highScore = score;
-    }
-    recordLeaderboardScore();
-    screenState = STATE_GAME_OVER;
-    showLeaderboard = false;
-}
-
 void GameCanvas::handleKeyEvent(uint8_t key)
 {
-    if (screenState == STATE_START)
-    {
-        if (key == '\r' || key == '\n' || key == ' ')
-        {
-            resetGame();
-        }
-        invalidate();
-        return;
-    }
-
-    if (screenState == STATE_GAME_OVER)
-    {
-        if (key == '\r' || key == '\n' || key == ' ')
-        {
-            resetGame();
-        }
-        else if (key == 'l' || key == 'L' || key == 't' || key == 'T')
-        {
-            showLeaderboard = !showLeaderboard;
-        }
-        invalidate();
-        return;
-    }
-
     int step = 15;
     if (key == 'w' || key == 'W')
     {
