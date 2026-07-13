@@ -347,27 +347,47 @@ void GameCanvas::drawStartOverlay(const touchgfx::Rect& invalidatedArea) const
     touchgfx::colortype black = touchgfx::Color::getColorFromRGB(0, 0, 0);
     drawOutlinedScaledString(invalidatedArea, 8, 58, "SPACE INVADERS", 2, white, black);
 
-    float shipWave = sinf((float)backgroundY * 0.035f);
-    int shipX = (240 - playerWidth) / 2 + (int)(shipWave * 42.0f);
-    int shipY = 150 + (int)(sinf((float)backgroundY * 0.022f) * 8.0f);
-    int pFlameH = 10 + (rand() % 8);
-    touchgfx::colortype flameCol = touchgfx::Color::getColorFromRGB(255, 100 + (rand() % 80), 0);
-    for (int row = 0; row < pFlameH; row++)
+    if (showLeaderboard)
     {
-        int w = (pFlameH - row) * 8 / pFlameH;
-        if (w > 0)
+        drawScaledString(invalidatedArea, 80, 124, "TOP 5", 2, touchgfx::Color::getColorFromRGB(255, 255, 100));
+        for (int i = 0; i < 5; i++)
         {
-            touchgfx::Rect rowRect(shipX + playerWidth / 2 - w / 2, shipY + playerHeight - 3 + row, w, 1);
-            touchgfx::Rect drawRect = rowRect & invalidatedArea;
-            if (drawRect.width > 0 && drawRect.height > 0)
-            {
-                touchgfx::HAL::lcd().fillRect(drawRect, flameCol);
-            }
+            char row[24];
+            char rank[4];
+            char value[12];
+            itoa(i + 1, rank, 10);
+            itoa(leaderboard[i], value, 10);
+            strcpy(row, rank);
+            strcat(row, ":");
+            strcat(row, value);
+            drawScaledString(invalidatedArea, 72, 148 + i * 16, row, 2, touchgfx::Color::getColorFromRGB(220, 220, 220));
         }
     }
-    drawBitmap(invalidatedArea, shipX, shipY, BITMAP_PLAYER_SHIP_1_ID);
+    else
+    {
+        float shipWave = sinf((float)backgroundY * 0.035f);
+        int shipX = (240 - playerWidth) / 2 + (int)(shipWave * 30.0f);
+        int shipY = 132 + (int)(sinf((float)backgroundY * 0.022f) * 6.0f);
+        int pFlameH = 10 + (rand() % 8);
+        touchgfx::colortype flameCol = touchgfx::Color::getColorFromRGB(255, 100 + (rand() % 80), 0);
+        for (int row = 0; row < pFlameH; row++)
+        {
+            int w = (pFlameH - row) * 8 / pFlameH;
+            if (w > 0)
+            {
+                touchgfx::Rect rowRect(shipX + playerWidth / 2 - w / 2, shipY + playerHeight - 3 + row, w, 1);
+                touchgfx::Rect drawRect = rowRect & invalidatedArea;
+                if (drawRect.width > 0 && drawRect.height > 0)
+                {
+                    touchgfx::HAL::lcd().fillRect(drawRect, flameCol);
+                }
+            }
+        }
+        drawBitmap(invalidatedArea, shipX, shipY, BITMAP_PLAYER_SHIP_1_ID);
+    }
 
-    drawButton(invalidatedArea, 54, 246, 132, 38, "PLAY", true);
+    drawButton(invalidatedArea, 54, 232, 132, 34, "PLAY", true);
+    drawButton(invalidatedArea, 18, 276, 204, 32, showLeaderboard ? "BACK" : "LEADERBOARD", false);
 }
 
 void GameCanvas::drawGameOverOverlay(const touchgfx::Rect& invalidatedArea) const
@@ -389,7 +409,7 @@ void GameCanvas::drawGameOverOverlay(const touchgfx::Rect& invalidatedArea) cons
 
     if (showLeaderboard)
     {
-        drawScaledString(invalidatedArea, 80, 134, "TOP 5", 2, touchgfx::Color::getColorFromRGB(255, 255, 100));
+        drawScaledString(invalidatedArea, 80, 128, "TOP 5", 2, touchgfx::Color::getColorFromRGB(255, 255, 100));
         for (int i = 0; i < 5; i++)
         {
             char row[24];
@@ -400,7 +420,7 @@ void GameCanvas::drawGameOverOverlay(const touchgfx::Rect& invalidatedArea) cons
             strcpy(row, rank);
             strcat(row, ":");
             strcat(row, value);
-            drawScaledString(invalidatedArea, 72, 156 + i * 18, row, 2, touchgfx::Color::getColorFromRGB(220, 220, 220));
+            drawScaledString(invalidatedArea, 72, 150 + i * 16, row, 2, touchgfx::Color::getColorFromRGB(220, 220, 220));
         }
     }
     else
@@ -411,8 +431,9 @@ void GameCanvas::drawGameOverOverlay(const touchgfx::Rect& invalidatedArea) cons
         drawScaledString(invalidatedArea, 126, 152, bestVal, 2, touchgfx::Color::getColorFromRGB(255, 255, 100));
     }
 
-    drawButton(invalidatedArea, 34, 248, 172, 32, "RESTART", true);
-    drawButton(invalidatedArea, 34, 288, 172, 26, showLeaderboard ? "EXIT" : "TOP 5", false);
+    drawButton(invalidatedArea, 34, 232, 172, 28, "RESTART", true);
+    drawButton(invalidatedArea, 34, 266, 172, 22, showLeaderboard ? "EXIT" : "TOP 5", false);
+    drawButton(invalidatedArea, 34, 294, 172, 22, "MENU", false);
 }
 
 void GameCanvas::drawStippleFlash(const touchgfx::Rect& invalidatedArea, int16_t x, int16_t y, uint16_t bitmapId, touchgfx::colortype col) const
@@ -539,10 +560,10 @@ void GameCanvas::drawBoss(const touchgfx::Rect& invalidatedArea, int16_t x, int1
 void GameCanvas::draw(const touchgfx::Rect& invalidatedArea) const
 {
     // Determine which level assets to draw based on transition state
-    int drawLevel = level;
+    int drawLevel = ((level - 1) % 3) + 1;
     if (levelTransitionTimer > 60)
     {
-        drawLevel = level - 1;
+        drawLevel = ((level - 2) % 3) + 1;
         if (drawLevel < 1) drawLevel = 1;
     }
 
@@ -1021,9 +1042,13 @@ void GameCanvas::handleClickEvent(const touchgfx::ClickEvent& event)
         {
             int x = event.getX();
             int y = event.getY();
-            if (x >= 54 && x <= 186 && y >= 246 && y <= 284)
+            if (x >= 54 && x <= 186 && y >= 232 && y <= 266)
             {
                 resetGame();
+            }
+            else if (x >= 18 && x <= 222 && y >= 276 && y <= 308)
+            {
+                showLeaderboard = !showLeaderboard;
             }
             invalidate();
             return;
@@ -1033,13 +1058,19 @@ void GameCanvas::handleClickEvent(const touchgfx::ClickEvent& event)
         {
             int x = event.getX();
             int y = event.getY();
-            if (x >= 34 && x <= 206 && y >= 248 && y <= 280)
+            if (x >= 34 && x <= 206 && y >= 232 && y <= 260)
             {
                 resetGame();
             }
-            else if (x >= 34 && x <= 206 && y >= 288 && y <= 314)
+            else if (x >= 34 && x <= 206 && y >= 266 && y <= 288)
             {
                 showLeaderboard = !showLeaderboard;
+            }
+            else if (x >= 34 && x <= 206 && y >= 294 && y <= 316)
+            {
+                resetGame();
+                screenState = STATE_START;
+                showLeaderboard = false;
             }
             invalidate();
             return;
@@ -1094,47 +1125,31 @@ void GameCanvas::update()
     // Tick game time
     gameTicks++;
 
-    // Trigger transitions based on backgroundY distance milestones
-    if (backgroundY >= 1200 && level == 1 && levelTransitionTimer == 0)
+    // Trigger transitions every 2400px of background travel.
+    if (!isBossFight && backgroundY >= level * 2400 && levelTransitionTimer == 0)
     {
-        level = 2;
+        level++;
         levelTransitionTimer = 120; // 2 seconds (120 frames at 60fps)
-    }
-    else if (backgroundY >= 2400 && level == 2 && levelTransitionTimer == 0)
-    {
-        level = 3;
-        levelTransitionTimer = 120;
-    }
-    else if (backgroundY >= 3600 && level == 3 && levelTransitionTimer == 0)
-    {
-        level = 4;
-        levelTransitionTimer = 120;
-    }
-    else if (backgroundY >= 4800 && level == 4 && levelTransitionTimer == 0)
-    {
-        level = 5;
-        levelTransitionTimer = 120;
-    }
-    else if (backgroundY >= 6000 && !isBossFight && level == 5 && levelTransitionTimer == 0)
-    {
-        isBossFight = true;
-        bossActive = true;
-        bossHp = 200; // Tăng máu Boss để phù hợp với đạn cấp độ 3 và kích thước lớn
-        bossMaxHp = 200;
-        // Boss được vẽ phóng to gấp đôi (64x64 gốc x2), nên kích thước biên là 128x128
-        bossWidth = 128;
-        bossHeight = 128;
-        bossX = 120 - bossWidth / 2; // = 56
-        bossY = -bossHeight;
-        bossVx = 1.5f;
-        bossShootTimer = 0;
-        bossHitFlashTimer = 0;
-        flashScreenTimer = 15; // flash screen green/red
-        victoryTimer = 0;
-        
-        bossTargetPoint = 0;
-        bossPauseTimer = 0;
-        bossIsPaused = false;
+        if ((level % 5) == 0)
+        {
+            isBossFight = true;
+            bossActive = true;
+            bossHp = 200 + (level / 5 - 1) * 60;
+            bossMaxHp = bossHp;
+            bossWidth = 128;
+            bossHeight = 128;
+            bossX = 120 - bossWidth / 2;
+            bossY = -bossHeight;
+            bossVx = 1.5f;
+            bossShootTimer = 0;
+            bossHitFlashTimer = 0;
+            flashScreenTimer = 15;
+            victoryTimer = 0;
+
+            bossTargetPoint = 0;
+            bossPauseTimer = 0;
+            bossIsPaused = false;
+        }
     }
 
     int scrollSpeed = 1;
@@ -1251,7 +1266,9 @@ void GameCanvas::update()
         else
         {
             spawnEnemy();
-            enemySpawnTimer = 45;
+            int spawnDelay = 45 - (level - 1) * 4;
+            if (spawnDelay < 18) spawnDelay = 18;
+            enemySpawnTimer = spawnDelay;
         }
     }
 
@@ -1757,7 +1774,7 @@ void GameCanvas::update()
                     weaponLevel = 1;
                     if (lives < 0)
                     {
-                        resetGame();
+                        endGame();
                         return;
                     }
                 }
@@ -1771,8 +1788,12 @@ void GameCanvas::update()
         victoryTimer--;
         if (victoryTimer == 1)
         {
-            resetGame();
-            return;
+            isBossFight = false;
+            bossActive = false;
+            victoryTimer = 0;
+            level++;
+            backgroundY = (level - 1) * 2400;
+            levelTransitionTimer = 120;
         }
     }
 
@@ -1880,18 +1901,19 @@ void GameCanvas::spawnEnemy()
             enemies[i].time = 0.0f;
             enemies[i].shootTimer = rand() % 40;
             enemies[i].hitFlashTimer = 0;
-            // HP scales with game level: Level 1 -> 1 HP, Level 2 -> 2 HP, Level 3 -> 3 HP
-            enemies[i].hp = level;
+            int enemyHp = level;
+            if (enemyHp > 8) enemyHp = 8;
+            enemies[i].hp = enemyHp;
 
             int typeRand = rand() % 6;
-            if (backgroundY < 1200)
+            if (backgroundY < 2400)
             {
                 while (typeRand == ENEMY_BURST_SHOOTER || typeRand == ENEMY_BALL_SHOOTER)
                 {
                     typeRand = rand() % 6;
                 }
             }
-            else if (backgroundY < 2400)
+            else if (backgroundY < 4800)
             {
                 if ((typeRand == ENEMY_BURST_SHOOTER || typeRand == ENEMY_BALL_SHOOTER) && (rand() % 100 < 70))
                 {
@@ -1904,7 +1926,7 @@ void GameCanvas::spawnEnemy()
             enemies[i].type = (EnemyType)typeRand;
             if (enemies[i].type == ENEMY_BURST_SHOOTER || enemies[i].type == ENEMY_BALL_SHOOTER)
             {
-                enemies[i].hp = level + 1;
+                enemies[i].hp = enemyHp + 1;
             }
 
             uint16_t enemyBmpId = BITMAP_ENEMY_SHIP_1_ID;
@@ -2055,6 +2077,10 @@ void GameCanvas::handleKeyEvent(uint8_t key)
         {
             resetGame();
         }
+        else if (key == 'l' || key == 'L' || key == 't' || key == 'T')
+        {
+            showLeaderboard = !showLeaderboard;
+        }
         invalidate();
         return;
     }
@@ -2068,6 +2094,12 @@ void GameCanvas::handleKeyEvent(uint8_t key)
         else if (key == 'l' || key == 'L' || key == 't' || key == 'T')
         {
             showLeaderboard = !showLeaderboard;
+        }
+        else if (key == 'm' || key == 'M')
+        {
+            resetGame();
+            screenState = STATE_START;
+            showLeaderboard = false;
         }
         invalidate();
         return;
