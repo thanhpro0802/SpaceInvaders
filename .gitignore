@@ -1,0 +1,21 @@
+
+
+# CubeMX and CubeIDE build outputs
+Debug/
+Release/
+*.o
+*.d
+*.su
+*.elf
+*.bin
+*.hex
+*.map
+*.list
+
+# IDE temp files
+.mxproject
+.settings/
+
+# OS files
+Thumbs.db
+.DS_Store
