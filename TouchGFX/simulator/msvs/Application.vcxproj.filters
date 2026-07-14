@@ -228,6 +228,12 @@
     <ClCompile Include="..\..\gui\src\screen1_screen\GameCanvas.cpp">
       <Filter>Source Files\gui\screen1_screen</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\gui\src\screen1_screen\GameLogic.cpp">
+      <Filter>Source Files\gui\screen1_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\screen1_screen\GameRenderer.cpp">
+      <Filter>Source Files\gui\screen1_screen</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(ApplicationRoot)\assets\texts\texts.xml">
@@ -680,6 +686,18 @@
       <Filter>Header Files\generated\simulator\include\simulator\video</Filter>
     </ClInclude>
     <ClInclude Include="..\..\gui\include\gui\screen1_screen\GameCanvas.hpp">
+      <Filter>Header Files\gui\screen1_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\screen1_screen\GameTypes.hpp">
+      <Filter>Header Files\gui\screen1_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\screen1_screen\GameLogic.hpp">
+      <Filter>Header Files\gui\screen1_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\screen1_screen\RetroGraphics.hpp">
+      <Filter>Header Files\gui\screen1_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\screen1_screen\GameRenderer.hpp">
       <Filter>Header Files\gui\screen1_screen</Filter>
     </ClInclude>
   </ItemGroup>
