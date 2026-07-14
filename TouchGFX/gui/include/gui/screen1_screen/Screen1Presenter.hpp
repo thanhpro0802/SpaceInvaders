@@ -25,6 +25,8 @@ public:
      */
     virtual void deactivate();
 
+    virtual void hardwareKeyEvent(uint8_t key);
+
     virtual ~Screen1Presenter() {}
 
 private:

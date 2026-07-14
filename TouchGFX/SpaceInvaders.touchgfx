@@ -7,33 +7,23 @@
           {
             "Type": "Image",
             "Name": "backgroundImage",
-            "X": -40,
-            "Width": 320,
-            "Height": 1280,
+            "Y": 2,
+            "Width": 240,
+            "Height": 320,
             "RelativeFilename": "background_1.png"
           },
           {
             "Type": "Image",
-            "Name": "nebulaImage",
-            "X": -40,
-            "Width": 320,
-            "Height": 1280,
-            "RelativeFilename": "nebula_1.png"
-          },
-          {
-            "Type": "Image",
             "Name": "dustImage",
-            "X": -40,
-            "Width": 320,
-            "Height": 1280,
+            "Width": 240,
+            "Height": 320,
             "RelativeFilename": "dust_1.png"
           },
           {
             "Type": "Image",
             "Name": "starsImage",
-            "X": -40,
-            "Width": 320,
-            "Height": 1280,
+            "Width": 240,
+            "Height": 320,
             "RelativeFilename": "stars_1.png"
           },
           {

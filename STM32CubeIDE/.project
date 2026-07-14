@@ -460,59 +460,14 @@
 			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/SVGDatabase.cpp</locationURI>
 		</link>
 		<link>
-			<name>Application/User/generated/image_asteroid_blue.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_asteroid_blue.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/image_asteroid_green.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_asteroid_green.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/image_asteroid_purple.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_asteroid_purple.cpp</locationURI>
-		</link>
-		<link>
 			<name>Application/User/generated/image_asteroid_red.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_asteroid_red.cpp</locationURI>
 		</link>
 		<link>
-			<name>Application/User/generated/image_asteroid_white.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_asteroid_white.cpp</locationURI>
-		</link>
-		<link>
 			<name>Application/User/generated/image_background_1.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_background_1.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/image_background_2.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_background_2.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/image_background_3.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_background_3.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/image_background_4.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_background_4.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/image_background_5.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_background_5.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/image_background_nebula.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_background_nebula.cpp</locationURI>
 		</link>
 		<link>
 			<name>Application/User/generated/image_background_space.cpp</name>
@@ -533,26 +488,6 @@
 			<name>Application/User/generated/image_dust_1.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_dust_1.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/image_dust_2.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_dust_2.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/image_dust_3.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_dust_3.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/image_dust_4.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_dust_4.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/image_dust_5.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_dust_5.cpp</locationURI>
 		</link>
 		<link>
 			<name>Application/User/generated/image_enemy_ship_1.cpp</name>
@@ -640,6 +575,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_exp_round_9.cpp</locationURI>
 		</link>
 		<link>
+			<name>Application/User/generated/image_game_title.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_game_title.cpp</locationURI>
+		</link>
+		<link>
 			<name>Application/User/generated/image_item_heal.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_item_heal.cpp</locationURI>
@@ -670,54 +610,9 @@
 			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_nautolan_ship_torpedo_ship.cpp</locationURI>
 		</link>
 		<link>
-			<name>Application/User/generated/image_nebula_1.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_nebula_1.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/image_nebula_2.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_nebula_2.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/image_nebula_3.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_nebula_3.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/image_nebula_4.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_nebula_4.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/image_nebula_5.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_nebula_5.cpp</locationURI>
-		</link>
-		<link>
 			<name>Application/User/generated/image_planets_1.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_planets_1.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/image_planets_2.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_planets_2.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/image_planets_3.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_planets_3.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/image_planets_4.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_planets_4.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/image_planets_5.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_planets_5.cpp</locationURI>
 		</link>
 		<link>
 			<name>Application/User/generated/image_player_ship_1.cpp</name>
@@ -740,24 +635,9 @@
 			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_stars_1.cpp</locationURI>
 		</link>
 		<link>
-			<name>Application/User/generated/image_stars_2.cpp</name>
+			<name>Application/User/generated/image_ui_x.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_stars_2.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/image_stars_3.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_stars_3.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/image_stars_4.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_stars_4.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/image_stars_5.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_stars_5.cpp</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_ui_x.cpp</locationURI>
 		</link>
 		<link>
 			<name>Application/User/generated/LanguageGb.cpp</name>

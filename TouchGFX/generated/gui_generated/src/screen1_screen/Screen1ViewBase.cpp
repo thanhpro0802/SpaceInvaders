@@ -12,19 +12,15 @@ Screen1ViewBase::Screen1ViewBase()
     __background.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
     add(__background);
 
-    backgroundImage.setXY(-40, 0);
+    backgroundImage.setXY(0, 2);
     backgroundImage.setBitmap(touchgfx::Bitmap(BITMAP_BACKGROUND_1_ID));
     add(backgroundImage);
 
-    nebulaImage.setXY(-40, 0);
-    nebulaImage.setBitmap(touchgfx::Bitmap(BITMAP_NEBULA_1_ID));
-    add(nebulaImage);
-
-    dustImage.setXY(-40, 0);
+    dustImage.setXY(0, 0);
     dustImage.setBitmap(touchgfx::Bitmap(BITMAP_DUST_1_ID));
     add(dustImage);
 
-    starsImage.setXY(-40, 0);
+    starsImage.setXY(0, 0);
     starsImage.setBitmap(touchgfx::Bitmap(BITMAP_STARS_1_ID));
     add(starsImage);
 

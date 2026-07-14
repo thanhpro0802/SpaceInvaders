@@ -16,6 +16,7 @@ public:
     void tick();
 protected:
     ModelListener* modelListener;
+    bool lastBombState;
 };
 
 #endif // MODEL_HPP

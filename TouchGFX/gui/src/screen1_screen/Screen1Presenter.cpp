@@ -16,3 +16,8 @@ void Screen1Presenter::deactivate()
 {
 
 }
+
+void Screen1Presenter::hardwareKeyEvent(uint8_t key)
+{
+    view.handleKeyEvent(key);
+}

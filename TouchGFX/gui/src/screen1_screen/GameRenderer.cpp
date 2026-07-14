@@ -9,12 +9,12 @@
 
 void GameRenderer::drawStartOverlay(const GameLogic& logic, const touchgfx::Rect& absoluteRect, const touchgfx::Rect& invalidatedArea) const
 {
-    touchgfx::Bitmap startPlanets(BITMAP_PLANETS_3_ID);
+    touchgfx::Bitmap startPlanets(BITMAP_PLANETS_1_ID);
     int startPlanetH = startPlanets.getHeight();
     int startPlanetScrollY = (logic.backgroundY / 3) % startPlanetH;
     for (int y = -startPlanetH; y < 320; y += startPlanetH)
     {
-        RetroGraphics::drawBitmap(absoluteRect, invalidatedArea, -40, y + startPlanetScrollY, BITMAP_PLANETS_3_ID);
+        RetroGraphics::drawBitmap(absoluteRect, invalidatedArea, -40, y + startPlanetScrollY, BITMAP_PLANETS_1_ID);
     }
 
     touchgfx::Rect shade(0, 0, 240, 320);
@@ -197,98 +197,24 @@ void GameRenderer::render(const GameLogic& logic, const touchgfx::Rect& absolute
     }
 
     uint16_t bgBmpId = BITMAP_BACKGROUND_1_ID;
-    uint16_t nebulaBmpId = BITMAP_NEBULA_1_ID;
-    uint16_t dustBmpId = BITMAP_DUST_1_ID;
-    uint16_t starsBmpId = BITMAP_STARS_1_ID;
-    uint16_t planetsBmpId = BITMAP_PLANETS_1_ID;
 
-    if (drawLevel == 2)
-    {
-        bgBmpId = BITMAP_BACKGROUND_2_ID;
-        nebulaBmpId = BITMAP_NEBULA_2_ID;
-        dustBmpId = BITMAP_DUST_2_ID;
-        starsBmpId = BITMAP_STARS_2_ID;
-        planetsBmpId = BITMAP_PLANETS_2_ID;
-    }
-    else if (drawLevel == 3)
-    {
-        bgBmpId = BITMAP_BACKGROUND_3_ID;
-        nebulaBmpId = BITMAP_NEBULA_3_ID;
-        dustBmpId = BITMAP_DUST_3_ID;
-        starsBmpId = BITMAP_STARS_3_ID;
-        planetsBmpId = BITMAP_PLANETS_3_ID;
-    }
-    else if (drawLevel == 4)
-    {
-        bgBmpId = BITMAP_BACKGROUND_4_ID;
-        nebulaBmpId = BITMAP_NEBULA_4_ID;
-        dustBmpId = BITMAP_DUST_4_ID;
-        starsBmpId = BITMAP_STARS_4_ID;
-        planetsBmpId = BITMAP_PLANETS_4_ID;
-    }
-    else if (drawLevel == 5)
-    {
-        bgBmpId = BITMAP_BACKGROUND_5_ID;
-        nebulaBmpId = BITMAP_NEBULA_5_ID;
-        dustBmpId = BITMAP_DUST_5_ID;
-        starsBmpId = BITMAP_STARS_5_ID;
-        planetsBmpId = BITMAP_PLANETS_5_ID;
-    }
 
-    // 1. Draw multi-layered scrolling background
-    // Base Space
-    touchgfx::Bitmap bgSpace(bgBmpId);
-    int bgSH = bgSpace.getHeight();
-    int scrollSpaceY = (logic.backgroundY / 4) % bgSH;
-    for (int x = 0; x < 240; x += bgSpace.getWidth())
-    {
-        for (int y = -bgSH; y < 320; y += bgSH)
-        {
-            RetroGraphics::drawBitmap(absoluteRect, invalidatedArea, x, y + scrollSpaceY, bgBmpId);
-        }
-    }
+    int startPlanetH = 320;
+    int dustH = 320;
+    int starH = 320;
 
-    // Parallax Nebula
-    touchgfx::Bitmap bgNebula(nebulaBmpId);
-    int bgNH = bgNebula.getHeight();
-    int scrollNebulaY = (logic.backgroundY / 3) % bgNH;
-    for (int x = 0; x < 240; x += bgNebula.getWidth())
-    {
-        for (int y = -bgNH; y < 320; y += bgNH)
-        {
-            RetroGraphics::drawBitmap(absoluteRect, invalidatedArea, x, y + scrollNebulaY, nebulaBmpId);
-        }
-    }
+    int startPlanetScrollY = (logic.backgroundY / 3) % startPlanetH;
+    int dustScrollY = logic.backgroundY % dustH;
+    int starScrollY = (logic.backgroundY / 2) % starH;
 
-    // Parallax Dust
-    touchgfx::Bitmap bgDust(dustBmpId);
-    int bgDH = bgDust.getHeight();
-    int scrollDustY = (logic.backgroundY / 2) % bgDH;
-    for (int x = 0; x < 240; x += bgDust.getWidth())
-    {
-        for (int y = -bgDH; y < 320; y += bgDH)
-        {
-            RetroGraphics::drawBitmap(absoluteRect, invalidatedArea, x, y + scrollDustY, dustBmpId);
-        }
-    }
-
-    // Parallax Stars
-    touchgfx::Bitmap bgStars(starsBmpId);
-    int bgStH = bgStars.getHeight();
-    int scrollStarsY = (logic.backgroundY) % bgStH;
-    for (int x = 0; x < 240; x += bgStars.getWidth())
-    {
-        for (int y = -bgStH; y < 320; y += bgStH)
-        {
-            RetroGraphics::drawBitmap(absoluteRect, invalidatedArea, x, y + scrollStarsY, starsBmpId);
-        }
-    }
-
-    // Planets
-    touchgfx::Bitmap bgPlanets(planetsBmpId);
-    int bgPH = bgPlanets.getHeight();
-    int scrollPlanetsY = (logic.backgroundY / 6) % (320 + bgPH);
-    RetroGraphics::drawBitmap(absoluteRect, invalidatedArea, 10, -bgPH + scrollPlanetsY, planetsBmpId);
+    RetroGraphics::drawBitmap(absoluteRect, invalidatedArea, 0, startPlanetScrollY - startPlanetH, bgBmpId);
+    RetroGraphics::drawBitmap(absoluteRect, invalidatedArea, 0, startPlanetScrollY, bgBmpId);
+    
+    RetroGraphics::drawBitmap(absoluteRect, invalidatedArea, 0, starScrollY - starH, BITMAP_STARS_1_ID);
+    RetroGraphics::drawBitmap(absoluteRect, invalidatedArea, 0, starScrollY, BITMAP_STARS_1_ID);
+    
+    RetroGraphics::drawBitmap(absoluteRect, invalidatedArea, 0, dustScrollY - dustH, BITMAP_DUST_1_ID);
+    RetroGraphics::drawBitmap(absoluteRect, invalidatedArea, 0, dustScrollY, BITMAP_DUST_1_ID);
 
     if (logic.screenState == STATE_START)
     {

@@ -2,6 +2,7 @@
 #define MODELLISTENER_HPP
 
 #include <gui/model/Model.hpp>
+#include <stdint.h>
 
 class ModelListener
 {
@@ -9,6 +10,8 @@ public:
     ModelListener() : model(0) {}
     
     virtual ~ModelListener() {}
+
+    virtual void hardwareKeyEvent(uint8_t key) {}
 
     void bind(Model* m)
     {

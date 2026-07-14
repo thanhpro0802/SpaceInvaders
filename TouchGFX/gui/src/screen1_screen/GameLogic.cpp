@@ -104,7 +104,7 @@ void GameLogic::update()
         {
             isBossFight = true;
             bossActive = true;
-            bossHp = 200 + (level / 5 - 1) * 60;
+            bossHp = (200 + (level / 5 - 1) * 60);
             bossMaxHp = bossHp;
             bossWidth = 128;
             bossHeight = 128;
@@ -975,14 +975,7 @@ void GameLogic::spawnEnemy()
 
 void GameLogic::spawnAsteroid()
 {
-    uint16_t asteroidBmps[] = {
-        BITMAP_ASTEROID_BLUE_ID,
-        BITMAP_ASTEROID_GREEN_ID,
-        BITMAP_ASTEROID_PURPLE_ID,
-        BITMAP_ASTEROID_RED_ID,
-        BITMAP_ASTEROID_WHITE_ID
-    };
-    uint16_t selectedBmp = asteroidBmps[rand() % 5];
+    uint16_t selectedBmp = BITMAP_ASTEROID_RED_ID;
     touchgfx::Bitmap astBmp(selectedBmp);
     int aW = astBmp.getWidth();
     int aH = astBmp.getHeight();

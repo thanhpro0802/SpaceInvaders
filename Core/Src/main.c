@@ -25,6 +25,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "Components/ili9341/ili9341.h"
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -137,10 +138,41 @@ uint16_t                  IOE_ReadMultiple(uint8_t Addr, uint8_t Reg, uint8_t *p
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+static uint32_t my_rand_seed = 12345;
+int rand(void) {
+    my_rand_seed = (1103515245 * my_rand_seed + 12345);
+    return (unsigned int)(my_rand_seed / 65536) % 32768;
+}
+void srand(unsigned int seed) {
+    my_rand_seed = seed;
+}
+
 static LCD_DrvTypeDef* LcdDrv;
 
 uint32_t I2c3Timeout = I2C3_TIMEOUT_MAX; /*<! Value of Timeout when I2C communication fails */
 uint32_t Spi5Timeout = SPI5_TIMEOUT_MAX; /*<! Value of Timeout when SPI communication fails */
+
+int _write(int file, char *ptr, int len)
+{
+  static int uart_initialized = 0;
+  if (!uart_initialized) {
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_USART1_CLK_ENABLE();
+    GPIOA->MODER &= ~(3U << (9 * 2));
+    GPIOA->MODER |= (2U << (9 * 2));
+    GPIOA->AFR[1] &= ~(0xFU << ((9 - 8) * 4));
+    GPIOA->AFR[1] |= (7U << ((9 - 8) * 4));
+    USART1->BRR = 0x030D;
+    USART1->CR1 = USART_CR1_TE | USART_CR1_UE;
+    uart_initialized = 1;
+  }
+  for (int i = 0; i < len; i++)
+  {
+    while ((USART1->SR & USART_SR_TXE) == 0);
+    USART1->DR = (*ptr++ & 0xFF);
+  }
+  return len;
+}
 /* USER CODE END 0 */
 
 /**
@@ -167,7 +199,7 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+  printf("System init started...\r\n");
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -182,7 +214,7 @@ int main(void)
   /* Call PreOsInit function */
   MX_TouchGFX_PreOSInit();
   /* USER CODE BEGIN 2 */
-
+  printf("Starting TouchGFX init...\r\n");
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -212,7 +244,7 @@ int main(void)
   GUI_TaskHandle = osThreadNew(TouchGFX_Task, NULL, &GUI_Task_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
-  /* add threads, ... */
+  printf("OS Kernel starting...\r\n");
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
@@ -620,6 +652,18 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
+  /*Configure GPIO pins : BTN_W_Pin BTN_SPACE_Pin */
+  GPIO_InitStruct.Pin = BTN_W_Pin|BTN_SPACE_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : BTN_A_Pin BTN_D_Pin BTN_S_Pin */
+  GPIO_InitStruct.Pin = BTN_A_Pin|BTN_D_Pin|BTN_S_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
   /*Configure GPIO pins : PD12 PD13 */
   GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_13;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -628,6 +672,17 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
+  /* Configure GPIO pins : BTN_A_Pin BTN_D_Pin BTN_S_Pin */
+  GPIO_InitStruct.Pin = BTN_A_Pin | BTN_D_Pin | BTN_S_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /* Configure GPIO pins : BTN_W_Pin BTN_SPACE_Pin */
+  GPIO_InitStruct.Pin = BTN_W_Pin | BTN_SPACE_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
   /* USER CODE END MX_GPIO_Init_2 */
 }
 

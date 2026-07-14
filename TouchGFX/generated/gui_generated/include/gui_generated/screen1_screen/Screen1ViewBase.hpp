@@ -28,7 +28,6 @@ protected:
      */
     touchgfx::Box __background;
     touchgfx::Image backgroundImage;
-    touchgfx::Image nebulaImage;
     touchgfx::Image dustImage;
     touchgfx::Image starsImage;
     touchgfx::Image playerShipImage;

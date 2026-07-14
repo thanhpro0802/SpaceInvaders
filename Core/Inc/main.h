@@ -68,9 +68,28 @@ void Error_Handler(void);
 #define MCU_ACTIVE_GPIO_Port GPIOE
 #define SPI5_NCS_Pin GPIO_PIN_1
 #define SPI5_NCS_GPIO_Port GPIOC
+#define BTN_W_Pin GPIO_PIN_7
+#define BTN_W_GPIO_Port GPIOA
+#define BTN_A_Pin GPIO_PIN_4
+#define BTN_A_GPIO_Port GPIOC
+#define BTN_D_Pin GPIO_PIN_5
+#define BTN_D_GPIO_Port GPIOC
+#define BTN_S_Pin GPIO_PIN_8
+#define BTN_S_GPIO_Port GPIOC
+#define BTN_SPACE_Pin GPIO_PIN_10
+#define BTN_SPACE_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
-
+#define BTN_A_Pin GPIO_PIN_4
+#define BTN_A_GPIO_Port GPIOC
+#define BTN_D_Pin GPIO_PIN_5
+#define BTN_D_GPIO_Port GPIOC
+#define BTN_S_Pin GPIO_PIN_8
+#define BTN_S_GPIO_Port GPIOC
+#define BTN_W_Pin GPIO_PIN_7
+#define BTN_W_GPIO_Port GPIOA
+#define BTN_SPACE_Pin GPIO_PIN_10
+#define BTN_SPACE_GPIO_Port GPIOA
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

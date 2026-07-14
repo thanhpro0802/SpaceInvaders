@@ -10,6 +10,7 @@ extern const unsigned char image_background_space[]; // BITMAP_BACKGROUND_SPACE_
 extern const unsigned char image_background_stars[]; // BITMAP_BACKGROUND_STARS_ID = 3, Size: 240x320 pixels
 extern const unsigned char image_barrier[]; // BITMAP_BARRIER_ID = 4, Size: 48x48 pixels
 extern const unsigned char image_dust_1[]; // BITMAP_DUST_1_ID = 5, Size: 240x320 pixels
+extern const unsigned char image_dust_1_extra_data[];
 extern const unsigned char image_enemy_ship_1[]; // BITMAP_ENEMY_SHIP_1_ID = 6, Size: 64x64 pixels
 extern const unsigned char image_enemy_ship_horizontal[]; // BITMAP_ENEMY_SHIP_HORIZONTAL_ID = 7, Size: 42x42 pixels
 extern const unsigned char image_enemy_ship_shooter[]; // BITMAP_ENEMY_SHIP_SHOOTER_ID = 8, Size: 42x42 pixels
@@ -39,6 +40,7 @@ extern const unsigned char image_player_ship_1[]; // BITMAP_PLAYER_SHIP_1_ID = 3
 extern const unsigned char image_player_ship_mini[]; // BITMAP_PLAYER_SHIP_MINI_ID = 32, Size: 16x16 pixels
 extern const unsigned char image_shoot_1[]; // BITMAP_SHOOT_1_ID = 33, Size: 16x16 pixels
 extern const unsigned char image_stars_1[]; // BITMAP_STARS_1_ID = 34, Size: 240x320 pixels
+extern const unsigned char image_stars_1_extra_data[];
 extern const unsigned char image_ui_x[]; // BITMAP_UI_X_ID = 35, Size: 8x8 pixels
 
 const touchgfx::Bitmap::BitmapData bitmap_database[] = {
@@ -47,7 +49,7 @@ const touchgfx::Bitmap::BitmapData bitmap_database[] = {
     { image_background_space, 0, 240, 320, 0, 0, 240, ((uint8_t)touchgfx::Bitmap::RGB565) >> 3, 320, ((uint8_t)touchgfx::Bitmap::RGB565) & 0x7 },
     { image_background_stars, 0, 240, 320, 0, 0, 240, ((uint8_t)touchgfx::Bitmap::RGB565) >> 3, 320, ((uint8_t)touchgfx::Bitmap::RGB565) & 0x7 },
     { image_barrier, 0, 48, 48, 2, 21, 1, ((uint8_t)touchgfx::Bitmap::ARGB8888) >> 3, 6, ((uint8_t)touchgfx::Bitmap::ARGB8888) & 0x7 },
-    { image_dust_1, 0, 240, 320, 181, 18, 27, ((uint8_t)touchgfx::Bitmap::ARGB8888) >> 3, 53, ((uint8_t)touchgfx::Bitmap::ARGB8888) & 0x7 },
+    { image_dust_1, image_dust_1_extra_data, 240, 320, 181, 18, 27, ((uint8_t)touchgfx::Bitmap::RGB565) >> 3, 53, ((uint8_t)touchgfx::Bitmap::RGB565) & 0x7 },
     { image_enemy_ship_1, 0, 64, 64, 20, 29, 24, ((uint8_t)touchgfx::Bitmap::ARGB8888) >> 3, 5, ((uint8_t)touchgfx::Bitmap::ARGB8888) & 0x7 },
     { image_enemy_ship_horizontal, 0, 42, 42, 16, 16, 10, ((uint8_t)touchgfx::Bitmap::ARGB8888) >> 3, 6, ((uint8_t)touchgfx::Bitmap::ARGB8888) & 0x7 },
     { image_enemy_ship_shooter, 0, 42, 42, 19, 14, 5, ((uint8_t)touchgfx::Bitmap::ARGB8888) >> 3, 11, ((uint8_t)touchgfx::Bitmap::ARGB8888) & 0x7 },
@@ -76,7 +78,7 @@ const touchgfx::Bitmap::BitmapData bitmap_database[] = {
     { image_player_ship_1, 0, 32, 32, 11, 13, 10, ((uint8_t)touchgfx::Bitmap::ARGB8888) >> 3, 14, ((uint8_t)touchgfx::Bitmap::ARGB8888) & 0x7 },
     { image_player_ship_mini, 0, 16, 16, 6, 7, 4, ((uint8_t)touchgfx::Bitmap::ARGB8888) >> 3, 6, ((uint8_t)touchgfx::Bitmap::ARGB8888) & 0x7 },
     { image_shoot_1, 0, 16, 16, 6, 1, 5, ((uint8_t)touchgfx::Bitmap::ARGB8888) >> 3, 9, ((uint8_t)touchgfx::Bitmap::ARGB8888) & 0x7 },
-    { image_stars_1, 0, 240, 320, 69, 233, 5, ((uint8_t)touchgfx::Bitmap::ARGB8888) >> 3, 5, ((uint8_t)touchgfx::Bitmap::ARGB8888) & 0x7 },
+    { image_stars_1, image_stars_1_extra_data, 240, 320, 69, 233, 5, ((uint8_t)touchgfx::Bitmap::RGB565) >> 3, 5, ((uint8_t)touchgfx::Bitmap::RGB565) & 0x7 },
     { image_ui_x, 0, 8, 8, 6, 1, 1, ((uint8_t)touchgfx::Bitmap::ARGB8888) >> 3, 2, ((uint8_t)touchgfx::Bitmap::ARGB8888) & 0x7 }
 };
 
